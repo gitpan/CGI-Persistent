@@ -3,5 +3,5 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'CGI::Persistent',
-    'VERSION_FROM' => 'CGI/Persistent.pm', # finds $VERSION
+    'VERSION_FROM' => 'lib/CGI/Persistent.pm', # finds $VERSION
 );

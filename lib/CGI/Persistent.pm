@@ -6,7 +6,7 @@
 ## This code is free software; you can redistribute it and/or modify
 ## it under the same terms as Perl itself.
 ##
-## $Id: Persistent.pm,v 0.19 1999/04/24 23:32:08 root Exp root $
+## $Id: Persistent.pm,v 0.21 1999/12/07 04:18:30 root Exp root $
 
 package CGI::Persistent; 
 
@@ -14,7 +14,7 @@ use CGI;
 use Persistence::Object::Simple; 
 use vars qw(@ISA $VERSION);
 use Data::Dumper;
-@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 0.19 $' =~ /(\d+\.\d+)/; 
+@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 0.21 $' =~ /(\d+\.\d+)/; 
 
 sub new { 
 
@@ -33,9 +33,13 @@ sub new {
     $po->{ __DOPE } = undef; 
     my @names = $cgi->param (); 
 
-    for ( @names ) { $po->{ $_ } = $cgi->param( $_ ) unless $_ eq ".id" }
+    my $st = $cgi->param('.sailthru'); 
+    unless ( $st ) { 
+        for ( @names ) { $po->{$_} = $cgi->param( $_ ) unless $_ eq ".id" }
+    } 
+
     foreach $key ( keys %$po ) { 
-        $cgi->param( -name => $key, -values => $po->{ $key } ) 
+        $cgi->param( -name => $key, -values => $po->{$key} )
         unless ( grep /$key/, @names ) || $key eq "__Fn"
     }
 
@@ -71,11 +75,27 @@ sub state_url {
 
 }
 
+sub state_url_thru { 
+
+    my ( $self ) = @_; 
+    return $self->url ."?.id=".$self->param('.id')."&.sailthru=1";
+
+}
+
 sub state_field { 
 
     my ( $self ) = @_; 
     my $id = $self->param ( '.id' );
     return "<input type=hidden name=\".id\" value=\"$id\">"; 
+
+}
+
+sub state_field_thru { 
+
+    my ( $self ) = @_; 
+    my $id = $self->param ( '.id' );
+    return "<input type=hidden name=\".id\" value=\"$id\">" . "\n" .
+    "<input type=hidden name=\".sailthru\" value=\"1\">"; 
 
 }
 

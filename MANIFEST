@@ -1,6 +1,6 @@
 MANIFEST
 Makefile.PL
-CGI/Persistent.pm
+lib/CGI/Persistent.pm
 test.pl
 html/roach.cgi
 html/README.roach

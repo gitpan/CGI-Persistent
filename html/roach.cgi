@@ -8,6 +8,8 @@
 ##
 ## $Id: roach.cgi,v 1.3 1999/04/24 23:32:32 root Exp root $
 
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
 use CGI::Persistent; 
 
 my $rev = '$Id: roach.cgi,v 1.3 1999/04/24 23:32:32 root Exp root $';

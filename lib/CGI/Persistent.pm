@@ -14,7 +14,7 @@ use CGI;
 use Persistence::Object::Simple; 
 use vars qw(@ISA $VERSION);
 use Data::Dumper;
-@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 0.22 $' =~ /(\d+\.\d+)/; 
+@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 0.23 $' =~ /(\d+\.\d+)/; 
 
 sub new { 
 

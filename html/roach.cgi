@@ -43,7 +43,7 @@ if ( $cmd ) {
     
 }
 
-print "<br><br><hr>", $cgi->dump(); 
+print "<br><br><hr>", $cgi->Dump(); 
 print "<br>$rev";
 
 

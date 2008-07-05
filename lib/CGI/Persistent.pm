@@ -15,7 +15,8 @@ use Persistence::Object::Simple;
 use vars qw(@ISA $VERSION);
 use Data::Dumper;
 use File::Basename;
-@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 1.10 $' =~ /(\d+\.\d+)/; 
+@ISA = qw( CGI ); 
+$VERSION = '1.11';
 
 sub new { 
 

@@ -10,27 +10,30 @@
 
 package CGI::Persistent; 
 
-use CGI; 
+use CGI '-no_xhtml'; 
 use Persistence::Object::Simple; 
 use vars qw(@ISA $VERSION);
 use Data::Dumper;
-@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 1.00 $' =~ /(\d+\.\d+)/; 
+use File::Basename;
+@ISA = qw( CGI ); ( $VERSION ) = '$Revision: 1.10 $' =~ /(\d+\.\d+)/; 
 
 sub new { 
 
     my ( $class, $dope, $id ) = @_ ; 
     $dope = "." unless $dope; 
     my $cgi = new CGI; # print $cgi->header ();
-    my $fn  = $cgi->param( '.id' ) || $id; 
+    my $fn  = fileparse($cgi->param( '.id' ) || $id || ''); 
 
     unless ( $fn ) { 
         my $po = new Persistence::Object::Simple ( __Dope => $dope ); 
-        $cgi->append( -name => '.id', -values => $po->{ __Fn } );
-        $fn = $po->{ __Fn }; undef $po; 
+        $fn = fileparse $po->{ __Fn };
+        $cgi->append( -name => '.id', -values => $fn );
+	    undef $po; 
     }
 
-    my $po = new Persistence::Object::Simple __Fn => $fn; 
+    my $po = new Persistence::Object::Simple __Fn => "$dope/$fn";
     $po->{ __DOPE } = undef; 
+    $po->{sessiondir} = $dope;
     my @names = $cgi->param (); 
 
     my $st = $cgi->param('.sailthru'); 
@@ -40,7 +43,16 @@ sub new {
 
     foreach $key ( keys %$po ) { 
         $cgi->param( -name => $key, -values => $po->{$key} )
-        unless ( grep /$key/, @names ) || $key eq "__Fn"
+        unless ( grep /$key/, @names ) || $key eq "__Fn";
+    }
+
+    $cgi->{sessiondir} = $po->{sessiondir};
+
+    # Stringify the params. This is black magic to work around an interpreter
+    # crash in Data::Dumper.
+    foreach my $param ($cgi->param)
+    {
+        my $s = "param $param is " . $cgi->param($param) . "\n";
     }
 
     $po->commit ();
@@ -51,7 +63,7 @@ sub new {
 sub delete { 
   
     my ( $self, $param ) = @_; 
-    my $fn = $self->param( '.id' ); 
+    my $fn = join "/", ($self->{sessiondir},$self->param( '.id' )); 
     my $po = new Persistence::Object::Simple __Fn => $fn; 
     delete $po->{ $param }; $po->commit ();  
     $self->SUPER::delete ( $param ); # delete, is like, overloaded. 
@@ -61,7 +73,7 @@ sub delete {
 sub delete_all { 
 
     my ( $self ) = shift; 
-    $fn = $self->param( '.id' ); 
+    $fn = join "/", ($self->{sessiondir},$self->param( '.id' )); 
     my $po = new Persistence::Object::Simple __Fn => $fn; 
     $po->expire; 
     $self->SUPER::delete_all ();
@@ -99,7 +111,7 @@ sub state_field_thru {
 
 }
 
-"True Value";
+1;
 
 =head1 NAME
 
@@ -201,10 +213,22 @@ module by implementing a multi-page input form.
 CGI(3), 
 Persistence::Object::Simple(3)
 
+=head1 LICENSE 
+
+CGI::Persistent is distributed under the same license as Perl itself.
+
+=head1 REVISION HISTORY 
+
+=over 4 
+
+=item 1.00 Released 1998 
+
+=item 1.10 Applies patches from folks at Mitel/SME server. <http://rt.cpan.org/Public/Bug/Display.html?id=30970>
+
+=back
+
 =head1 AUTHOR
 
 Vipul Ved Prakash, mail@vipul.net
 
 =cut
-
-

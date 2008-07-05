@@ -8,7 +8,8 @@ WriteMakefile(
     'NAME'	        => 'CGI::Persistent',
     'VERSION_FROM'  => 'lib/CGI/Persistent.pm', # finds $VERSION
     'PREREQ_PM'     => {
-                            'Persistence::Object::Simple'   => '0'
+                            'Persistence::Object::Simple'   => '0',
+                            'File::Basename'                => '0',
                        }
 
 );
